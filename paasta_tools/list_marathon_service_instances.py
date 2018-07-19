@@ -42,8 +42,6 @@ from paasta_tools.utils import compose_job_id
 from paasta_tools.utils import get_services_for_cluster
 from paasta_tools.utils import load_system_paasta_config
 from paasta_tools.utils import long_job_id_to_short_job_id
-from paasta_tools.utils import NoDeploymentsAvailable
-from paasta_tools.utils import NoDockerImageError
 from paasta_tools.utils import paasta_print
 from paasta_tools.utils import use_requests_cache
 
@@ -102,7 +100,9 @@ def get_desired_marathon_configs(soa_dir):
                 cluster=cluster,
                 instance=instance,
             )
-        except (NoDeploymentsAvailable, NoDockerImageError):
+        # Not ideal but we rely on a lot of user input to create the app dict
+        # and we really can't afford to bail if just one app definition is malformed
+        except Exception:
             pass
     return formatted_marathon_configs, job_configs
 
